@@ -1,6 +1,5 @@
 //
 //  LastActivityRecorder.swift
-//  HappyScale
 //
 //  Created by Russ Shanahan on 3/11/19.
 //  Copyright © 2019 Front Pocket Software LLC. All rights reserved.
