@@ -20,6 +20,11 @@ This simple utility waits for your app to go completely idle on the main thread 
 WebViewWarmer.requestWarmingWhenIdle()
 ```
 
+## Supported Platforms
+
+* iOS
+* Swift 4.2
+
 ## License
 
 MIT
