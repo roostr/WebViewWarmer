@@ -29,7 +29,7 @@ import Foundation
         guard let runLoopObserver = installRunLoopObserver(observerClosure: { (observer: CFRunLoopObserver?, activity: CFRunLoopActivity) in
             self.lastActivity.touch() // Update the "last-event-seen" time whenever there's an event
         }) else {
-            NSLog("Error: Could not install run loop observer.")
+            print("Error: Could not install run loop observer.")
             return
         }
 
@@ -51,7 +51,7 @@ import Foundation
                     // We no longer need to observe the main queue's run loop.
                     self.removeRunLoopObserver(observer: runLoopObserver)
 
-                    NSLog("Caching the webview.")
+                    print("Caching the webview.")
                     var webView: UIWebView? = UIWebView(frame: .zero)
                     webView?.loadHTMLString("<html></html>", baseURL: nil)
                     
