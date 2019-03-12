@@ -14,7 +14,7 @@ import Foundation
         let _ = instance
     }
     
-    static private let instance = WebViewWarmer()
+    private static var instance: WebViewWarmer? = WebViewWarmer()
     
     private let lastActivity = LastActivityRecorder() // A way to track how long it's been since an event was seen
     private let requiredIdleDelay: Double = 0.5       // The duration, in seconds, the system must be completely idle before we try to load the UIWebView
@@ -60,6 +60,7 @@ import Foundation
                         OperationQueue.main.addOperation {
                             webView?.alpha = 0.0 // Perform an operation on the webView to silence a warning about it never being used.
                             webView = nil
+                            WebViewWarmer.instance = nil
                         }
                     }
                 }
