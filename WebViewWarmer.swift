@@ -7,14 +7,20 @@
 
 import Foundation
 import UIKit
+import WebKit
+
+@objc public enum WebViewWarmerType: Int {
+    case UIWebView, WKWebView
+}
 
 @objc public class WebViewWarmer: NSObject {
     
     // Kick off a request to load a UIWebView as soon as a sufficient period of idleness has elapsed.
-    @objc public static func requestWarmingWhenIdle() {
+    @objc public static func requestWarmingWhenIdle(webViewToWarm:WebViewWarmerType) {
         let _ = instance
+        self.webViewToWarm = webViewToWarm
     }
-    
+    private static var webViewToWarm: WebViewWarmerType = .UIWebView
     private static var instance: WebViewWarmer? = WebViewWarmer()
     
     private let lastActivity = LastActivityRecorder() // A way to track how long it's been since an event was seen
@@ -52,16 +58,33 @@ import UIKit
                     self.removeRunLoopObserver(observer: runLoopObserver)
 
                     print("Caching the webview.")
-                    var webView: UIWebView? = UIWebView(frame: .zero)
-                    webView?.loadHTMLString("<html></html>", baseURL: nil)
-                    
-                    // Keep this WebView object alive for a brief duration so it can fully initialize its web engine stuff
-                    backgroundQueue.addOperation {
-                        usleep(UInt32(self.webviewLifetime * 1_000_000))
-                        OperationQueue.main.addOperation {
-                            webView?.alpha = 0.0 // Perform an operation on the webView to silence a warning about it never being used.
-                            webView = nil
-                            WebViewWarmer.instance = nil
+                    //UIWebView or WKWebView?
+                    if (WebViewWarmer.webViewToWarm == .UIWebView) {
+                        var webView: UIWebView? = UIWebView(frame: .zero)
+                        webView?.loadHTMLString("<html></html>", baseURL: nil)
+
+                        // Keep this WebView object alive for a brief duration so it can fully initialize its web engine stuff
+                        backgroundQueue.addOperation {
+                            usleep(UInt32(self.webviewLifetime * 1_000_000))
+                            OperationQueue.main.addOperation {
+                                webView?.alpha = 0.0 // Perform an operation on the webView to silence a warning about it never being used.
+                                webView = nil
+                                WebViewWarmer.instance = nil
+                            }
+                        }
+                    } else {
+                        //WKWebView
+                        var webView: WKWebView? = WKWebView(frame: .zero)
+                        webView?.loadHTMLString("<html></html>", baseURL: nil)
+
+                        // Keep this WebView object alive for a brief duration so it can fully initialize its web engine stuff
+                        backgroundQueue.addOperation {
+                            usleep(UInt32(self.webviewLifetime * 1_000_000))
+                            OperationQueue.main.addOperation {
+                                webView?.alpha = 0.0 // Perform an operation on the webView to silence a warning about it never being used.
+                                webView = nil
+                                WebViewWarmer.instance = nil
+                            }
                         }
                     }
                 }
